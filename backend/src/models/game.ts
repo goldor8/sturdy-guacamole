@@ -1,0 +1,15 @@
+interface Game {
+    id_game: number,
+    num: number,
+    primary_: string,
+    yearpublished: number,
+    minplayers: number,
+    maxplayers: number,
+    description: string,
+    playingtime: number,
+    minage: number,
+    owned: number,
+    trading: number,
+    wanting: number,
+    wishing: number,
+}
