@@ -1,4 +1,4 @@
-interface Game {
+export interface Game {
     id_game: number,
     num: number,
     primary_: string,
