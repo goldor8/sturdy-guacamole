@@ -45,7 +45,7 @@
     .description {
         font-size:1.5rem;
         margin-top: 0.5rem;
-        height: 60px;
+
         overflow: hidden;
         text-overflow: ellipsis;
     }

@@ -102,6 +102,7 @@ CREATE TABLE Is_Category (
 
 CREATE TABLE Swipe (
     id_swipe INT PRIMARY KEY AUTO_INCREMENT,
+    id_swipe_session INT,
     id_user INT,
     id_game_swiped INT,
     id_game_kept INT,

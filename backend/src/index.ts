@@ -2,9 +2,15 @@ import express from 'express';
 import multer from 'multer';
 import games from './modules/games';
 import auth from './modules/auth';
+import cors from 'cors'
 
 const app = express();
 const PORT = 3000;
+app.use(cors(
+    {
+        origin: 'http://localhost:5173', // Replace with your frontend URL
+    }
+));
 
 app.use(express.json()); // Middleware to parse JSON bodies
 app.use(express.urlencoded({ extended: true })); // Middleware to parse URL-encoded bodies
