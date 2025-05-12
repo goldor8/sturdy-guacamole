@@ -5,7 +5,7 @@ import { User } from '../models/user';
 import { buildWebError } from './errorHandling/webError';
 import JWTSecurity from './JWTSecurity';
 
-async function registerUser(username: string, password: string): Promise<void> {
+async function registerUser(username: string, password: string): Promise<string> {
     let userByUsername = await getUserByUsername(username);
     if(userByUsername !== null) {
         throw buildWebError(401, 'Username already exists');
@@ -13,7 +13,10 @@ async function registerUser(username: string, password: string): Promise<void> {
 
     let hashedPassword = await hashPassword(password);
     await insertUser(username, hashedPassword);
-    return;
+
+    let user = await getUserByUsername(username);
+
+    return JWTSecurity.generateToken(user.username, user.user_type as UserType);
 }
 
 async function hashPassword(password: string): Promise<string> {

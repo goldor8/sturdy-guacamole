@@ -1,153 +1,129 @@
 <script lang="ts">
     import GameCard from '$lib/components/GameCard.svelte';
-    import { onMount } from 'svelte';
-    import type { Game } from '$lib/models/game';
-
-
-    let games: Game[] = [];
-    let current = 0;
-    let error: string | null = null;
-
-    onMount(async () => {
-        // 1. Lecture des params initiaux depuis l'URL
-        const urlParams = new URLSearchParams(window.location.search);
-
-        // 2. Reconstruction des params pour l'API Express
-        const apiParams = new URLSearchParams();
-
-        // Catégorie de jeu
-        if (urlParams.has('category')) {
-            apiParams.set('categories', urlParams.get('category')!);
-        }
-
-        // Années publiées
-        if (urlParams.has('minYear') && urlParams.has('maxYear')) {
-            apiParams.set('yearFirst', urlParams.get('minYear')!);
-            apiParams.set('yearLast',  urlParams.get('maxYear')!);
-        }
-
-        // Nombre de joueurs
-        if (urlParams.has('minPlayers') && urlParams.has('maxPlayers')) {
-            apiParams.set('minplayers', urlParams.get('minPlayers')!);
-            apiParams.set('maxplayers', urlParams.get('maxPlayers')!);
-        }
-
-        // Temps de jeu moyen
-        if (urlParams.has('minTime') && urlParams.has('maxTime')) {
-            apiParams.set('playTimeMin', urlParams.get('minTime')!);
-            apiParams.set('playTimeMax', urlParams.get('maxTime')!);
-        }
-
-        const apiUrl = `http://localhost:3000/games/duel?${apiParams.toString()}`;
-        console.log('Fetching', apiUrl);
-
-        try {
-            const res = await fetch(apiUrl);
-            if (!res.ok) {
-                throw new Error(`Erreur ${res.status} : ${res.statusText}`);
-            }
-            games = await res.json();
-            games=games[0]
-            console.log(games);
-            if (games.length === 0) {
-                error = 'Aucun jeu trouvé pour ces critères.';
-            }
-        } catch (err: any) {
-            error = err.message;
-        }
-    });
-    function next() {
-        if (current < games.length - 1) current += 1;
+  
+    const games = [
+      {
+        title: "Catan",
+        year: 1995,
+        minPlayers: 3,
+        maxPlayers: 4,
+        playingTime: 60,
+        category: "Strategy",
+        description: "Trade, build and settle an island in this classic game of resource management."
+      },
+      {
+        title: "Carcassonne",
+        year: 2000,
+        minPlayers: 2,
+        maxPlayers: 5,
+        playingTime: 45,
+        category: "Tile-laying",
+        description: "Build a medieval landscape with roads, cities and fields!"
+      }
+    ];
+  
+    let swipedCardIndex: number | null = null;
+    let swipeDirection: 'left' | 'right' | null = null;
+  
+    function swipeCard(index: number, direction: 'left' | 'right') {
+      swipedCardIndex = index;
+      swipeDirection = direction;
+  
+      // Attendre l'animation avant de retirer la carte
+      setTimeout(() => {
+        games.splice(index, 1);
+        swipedCardIndex = null;
+        swipeDirection = null;
+      }, 500); // durée de l'animation
     }
-    function prev() {
-        if (current > 0) current -= 1;
-    }
-
-</script>
-
-<div class="page">
-
+  </script>
+  
+  <div class="page">
     <h1>GAME CHOICE</h1>
-
+  
     <div class="cards-container">
-        <div class="arrow left">←<br />SWIPE</div>
-        {#if error}
-            <p class="error">{error}</p>
-        {:else if games.length === 0}
-            <p>Pas de jeu </p>
-        {:else}
-        <GameCard
-                title={games[0].primary_name}
-                year={games[0].year_published}
-                minPlayers={games[0].min_players}
-                maxPlayers={games[0].max_players}
-                playingTime={games[0].playing_time}
-                category={"{games[0].category}"}
-                description={games[0].description}
-        />
-
-        <GameCard
-                title={games[1].primary_name}
-                year={games[1].year_published}
-                minPlayers={games[1].min_players}
-                maxPlayers={games[1].max_players}
-                playingTime={games[1].playing_time}
-                category={"{games[0].category}"}
-                description={games[1].description}
-        />
-
-        <div class="arrow right">SWIPE<br />→</div>
-        {/if}
-
+      <div class="arrow left" on:click={() => swipeCard(0, 'left')}>←<br />SWIPE</div>
+  
+      {#each games as game, index}
+      <GameCard
+      {...game}
+      onSwipe={(dir) => swipeCard(index, dir)}
+      class={`card 
+        ${swipedCardIndex === index && swipeDirection === 'left' ? 'swipe-left' : ''} 
+        ${swipedCardIndex === index && swipeDirection === 'right' ? 'swipe-right' : ''}`}
+    />
+      {/each}
+  
+      <div class="arrow right" on:click={() => swipeCard(0, 'right')}>SWIPE<br />→</div>
     </div>
-    <!-- Add button stop game -->
-    <button id="stopGame" class="arrow" >STOP<br />GAME</button>
+  
     <footer>CORENTIN DIMITRI JULES 2025</footer>
-</div>
-
-
-
-
-<style>
+  </div>
+  
+  <style>
     .page {
-        background-color: #2e2c7e;
-        color: white;
-        font-family: 'Press Start 2P', monospace;
-        text-align: center;
-        padding: 2rem 2rem 0;
-        min-height: 100vh;
-
+      background-color: #2e2c7e;
+      color: white;
+      font-family: 'Press Start 2P', monospace;
+      text-align: center;
+      padding: 2rem 2rem 0;
+      min-height: 100vh;
     }
-
+  
     h1 {
-        font-size: 5rem;
-        margin-bottom: 1.5rem;
+      font-size: 5rem;
+      margin-bottom: 1.5rem;
     }
-
+  
     .cards-container {
-        display: flex;
-        justify-content: center;
-        align-items: center;
-        gap: 2rem;
-        height: 60vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 2rem;
+      height: 70vh;
     }
-
+  
     .arrow {
-        font-size: 3rem;
-        color: white;
-        text-align: center;
+      font-size: 3rem;
+      color: white;
+      text-align: center;
+      cursor: pointer;
     }
-
+  
     .left {
-        margin-right: 1rem;
+      margin-right: 1rem;
     }
-
+  
     .right {
-        margin-left: 1rem;
+      margin-left: 1rem;
     }
-
+  
     footer {
-        margin-top: 1.5rem;
-        font-size: 2rem;
+      margin-top: 1.5rem;
+      font-size: 2rem;
     }
-</style>
+  
+    /* Animations */
+    .swipe-left {
+      animation: swipeLeft 0.5s ease-out forwards;
+    }
+  
+    .swipe-right {
+      animation: swipeRight 0.5s ease-out forwards;
+    }
+  
+    @keyframes swipeLeft {
+      to {
+        transform: translateX(-150%) rotate(-20deg);
+        opacity: 0;
+      }
+    }
+  
+    @keyframes swipeRight {
+      to {
+        transform: translateX(150%) rotate(20deg);
+        opacity: 0;
+      }
+    }
+  </style>
+  
