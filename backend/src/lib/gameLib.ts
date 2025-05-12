@@ -20,23 +20,26 @@ async function getDuelGamesByCategories(
     playTimeMin: number | null,
     playTimeMax: number | null
     ): Promise<Game[]> {
-    // IN p_categories      VARCHAR(255),  -- liste CSV ou NULL
-    //     IN p_minPlayers      INT,           -- minPlayers ou NULL
-    //     IN p_maxPlayers      INT,           -- maxPlayers ou NULL
-    //     IN p_yearFirst       INT,           -- premier yearPublished ou NULL
-    //     IN p_yearLast        INT,           -- dernier yearPublished ou NULL
-    //     IN p_playTimeMin     INT,           -- min playing_time ou NULL
-    //     IN p_playTimeMax     INT            -- max playing_time ou NULL
-
-
-
-
     return await rowsQuery<Game>('CALL get_duel_games_by_categories(?, ?, ?, ?, ?, ?, ?)', [category, minPlayers, maxPlayers, yearFirst, yearLast, playTimeMin, playTimeMax])
 }
+async function getGameByCategories(
+    category: string | null,
+    minPlayers: number | null,
+    maxPlayers: number | null,
+    yearFirst: number | null,
+    yearLast: number | null,
+    playTimeMin: number | null,
+    playTimeMax: number | null,
+   removeId: number[] | null,
+    ): Promise<Game[]> {
+    return await rowsQuery<Game>('CALL get_games_by_categories(?, ?, ?, ?, ?, ?, ?)', [category, minPlayers, maxPlayers, yearFirst, yearLast, playTimeMin, playTimeMax, removeId])
+}
+
 export default {
     getGameById,
     getRandomGame,
     getDuelGamesByCategory,
     getDuelGamesByCategories,
+    getGameByCategories
 
 }
