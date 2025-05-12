@@ -331,3 +331,77 @@ EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 END$$
 DELIMITER ;
+
+
+DELIMITER $$
+CREATE PROCEDURE get_games_by_categories(
+    --category: string | null,
+--     minPlayers: number | null,
+--     maxPlayers: number | null,
+--     yearFirst: number | null,
+--     yearLast: number | null,
+--     playTimeMin: number | null,
+--     playTimeMax: number | null,
+--     removeId: number[] | null,
+    IN p_categories      VARCHAR(255),  -- liste CSV ou NULL
+    IN p_minPlayers      INT,           -- minPlayers ou NULL
+    IN p_maxPlayers      INT,           -- maxPlayers ou NULL
+    IN p_yearFirst       INT,           -- premier yearPublished ou NULL
+    IN p_yearLast        INT,           -- dernier yearPublished ou NULL
+    IN p_playTimeMin     INT,           -- min playing_time ou NULL
+    IN p_playTimeMax     INT,           -- max playing_time ou NULL
+    IN p_removeId        VARCHAR(255)   -- liste CSV ou NULL
+)
+BEGIN
+    -- Construction dynamique de la requête
+    SET @sql = 'SELECT g.* FROM Game g';
+    -- Si on filtre sur catégories, on joint les tables
+    IF p_categories IS NOT NULL AND p_categories <> '' THEN
+        SET @sql = CONCAT(@sql,
+            ' JOIN Is_Category ic ON g.id_game = ic.id_game',
+            ' JOIN Category c ON ic.id_category = c.id_category'
+        );
+END IF;
+    SET @sql = CONCAT(@sql, ' WHERE 1=1');
+
+    -- Conditions optionnelles
+    IF p_categories IS NOT NULL AND p_categories <> '' THEN
+        SET @sql = CONCAT(@sql,
+            ' AND FIND_IN_SET(c.category_name, ''', REPLACE(p_categories, '''', '\\'''), ''')'
+        );
+END IF;
+    IF p_minPlayers IS NOT NULL THEN
+        SET @sql = CONCAT(@sql, ' AND g.min_players >= ', p_minPlayers);
+END IF;
+    IF p_maxPlayers IS NOT NULL THEN
+        SET @sql = CONCAT(@sql, ' AND g.max_players <= ', p_maxPlayers);
+END IF;
+    IF p_yearFirst IS NOT NULL THEN
+        SET @sql = CONCAT(@sql, ' AND g.year_published >= ', p_yearFirst);
+END IF;
+    IF p_yearLast IS NOT NULL THEN
+        SET @sql = CONCAT(@sql, ' AND g.year_published <= ', p_yearLast);
+END IF;
+    IF p_playTimeMin IS NOT NULL THEN
+        SET @sql = CONCAT(@sql, ' AND g.playing_time >= ', p_playTimeMin);
+END IF;
+    IF p_playTimeMax IS NOT NULL THEN
+        SET @sql = CONCAT(@sql, ' AND g.playing_time <= ', p_playTimeMax);
+END IF;
+
+    -- Exclusion d'un ou plusieurs jeux (removeId)
+    IF p_removeId IS NOT NULL AND p_removeId <> '' THEN
+        SET @sql = CONCAT(@sql,
+            ' AND g.id_game NOT IN (', REPLACE(p_removeId, '''', '\\'''), ')'
+        );
+END IF;
+
+    -- Aléatoire et limite 2
+    SET @sql = CONCAT(@sql, ' ORDER BY RAND() LIMIT 2');
+
+    -- Préparation et exécution
+PREPARE stmt FROM @sql;
+EXECUTE stmt;
+DEALLOCATE PREPARE stmt;
+END$$
+DELIMITER ;
