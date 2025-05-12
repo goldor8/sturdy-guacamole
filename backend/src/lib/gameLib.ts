@@ -8,9 +8,38 @@ async function getGameById(id: number): Promise<Game | null> {
 async function getRandomGame(): Promise<Game | null> {
   return await rowQuery<Game>('SELECT * FROM game ORDER BY RAND() LIMIT 1', [])
 }
-
+async function getDuelGamesByCategory(category: string): Promise<Game[]> {
+    return await rowsQuery<Game>( 'CALL get_duel_games_by_category(?)', [category])
+}
+async function getDuelGamesByCategories(
+    category: string | null,
+    minPlayers: number | null,
+    maxPlayers: number | null,
+    yearFirst: number | null,
+    yearLast: number | null,
+    playTimeMin: number | null,
+    playTimeMax: number | null
+    ): Promise<Game[]> {
+    return await rowsQuery<Game>('CALL get_duel_games_by_categories(?, ?, ?, ?, ?, ?, ?)', [category, minPlayers, maxPlayers, yearFirst, yearLast, playTimeMin, playTimeMax])
+}
+async function getGameByCategories(
+    category: string | null,
+    minPlayers: number | null,
+    maxPlayers: number | null,
+    yearFirst: number | null,
+    yearLast: number | null,
+    playTimeMin: number | null,
+    playTimeMax: number | null,
+   removeId: number[] | null,
+    ): Promise<Game[]> {
+    return await rowsQuery<Game>('CALL get_games_by_categories(?, ?, ?, ?, ?, ?, ?)', [category, minPlayers, maxPlayers, yearFirst, yearLast, playTimeMin, playTimeMax, removeId])
+}
 
 export default {
     getGameById,
     getRandomGame,
+    getDuelGamesByCategory,
+    getDuelGamesByCategories,
+    getGameByCategories
+
 }
