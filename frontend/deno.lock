@@ -473,6 +473,7 @@
         "npm:@sveltejs/adapter-auto@4",
         "npm:@sveltejs/kit@^2.16.0",
         "npm:@sveltejs/vite-plugin-svelte@5",
+        "npm:sass-embedded@^1.86.3",
         "npm:svelte-check@4",
         "npm:svelte@5",
         "npm:typescript@5",
