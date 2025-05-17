@@ -1,14 +1,13 @@
 <script lang="ts">
-    export let title: string;
-    export let year: number;
-    export let minPlayers: number;
-    export let maxPlayers: number;
-    export let playingTime: number;
-    export let category: string;
+    export let primary_name: string;
+    export let year_published: number;
+    export let min_players: number;
+    export let max_players: number;
+    export let playing_time: number;
+
     export let description: string;
-  
     export let onSwipe: (direction: 'left' | 'right') => void;
-  
+
     let startX = 0;
     let currentX = 0;
     let isDragging = false;
@@ -48,18 +47,18 @@
     }
   </script>
   
-  <div
+  <div {...$$restProps}
     bind:this={cardElem}
     class="card"
     on:pointerdown={handlePointerDown}
     on:pointermove={handlePointerMove}
     on:pointerup={handlePointerUp}
   >
-    <h2>{title}</h2>
-    <div class="info"><strong>Year:</strong> {year}</div>
-    <div class="info"><strong>Players:</strong> {minPlayers} - {maxPlayers}</div>
-    <div class="info"><strong>Time:</strong> {playingTime} min</div>
-    <div class="info"><strong>Category:</strong> {category}</div>
+    <h2>{primary_name}</h2>
+    <div class="info"><strong>Year:</strong> {year_published}</div>
+    <div class="info"><strong>Players:</strong> {min_players} - {max_players}</div>
+    <div class="info"><strong>Time:</strong> {playing_time} min</div>
+
     <div class="description">{description}</div>
   </div>
 
@@ -90,7 +89,7 @@
 	.description {
 		font-size: 1.5rem;
 		margin-top: 0.5rem;
-		height: 60px;
+
 		overflow: hidden;
 		text-overflow: ellipsis;
 	}
