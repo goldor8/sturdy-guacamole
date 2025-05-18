@@ -3,9 +3,11 @@
   import { onMount } from 'svelte';
   import type { Game } from '$lib/models/game';
   import {goto} from "$app/navigation";
+    import { getGameThumbnailById } from '$lib/gamesApi';
   const urlParams = new URLSearchParams(window.location.search);
   const apiParams = new URLSearchParams();
   let games: Game[] = [];
+  let gamesThumbnails: (string | null)[] = [];
   let error: string | null = null;
   let swipedCardIndex: number | null = null;
   let swipeDirection: 'left' | 'right' | null = null;
@@ -100,7 +102,14 @@
         wishing:       g.wishing
       };
       });
+
+      for (let i = 0; i < games.length; i++) {
+        const game = games[i];
+        gamesThumbnails[i] = await getGameThumbnailById(game.id_game);
+      }
+      
       console.log('Games:', games);
+      console.log('Thumbnails:', gamesThumbnails);
       if (games.length === 0) {
         error = 'Aucun jeu trouvé pour ces critères.';
       }
@@ -116,6 +125,7 @@
       // Remplacer la carte swipée par un nouveau jeu
       const next = await fetchNextGame();
       if (next) {
+        gamesThumbnails[index] = await getGameThumbnailById(next.id_game);
         games[index] = next;
       } else {
         games.splice(index, 1);
@@ -144,6 +154,7 @@
           {swipedCardIndex === index && swipeDirection === 'right' ? 'swipe-right' : ''}">
           <GameCard
                   {...game}
+                  thumbnailUrl={gamesThumbnails[index]}
                   onSwipe={(side) => swipeCard(index, side)}
           />
         </div>

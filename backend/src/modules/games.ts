@@ -1,5 +1,6 @@
 import { Express, Router } from "express";
 import gameLib from "../lib/gameLib";
+import { buildWebError, sendError, sendSuccess } from "../lib/errorHandling/webError";
 
 let router = Router();
 
@@ -17,6 +18,20 @@ function init(): Router{
             return;
         }
         res.json(game);
+    });
+
+    router.get("/thumbnail/:id", async (req, res) => {
+        let id = parseInt(req.params.id);
+        if (isNaN(id)) {
+            sendError(res, buildWebError(400, "Invalid ID"));
+            return;
+        }
+        let thumbnail = await gameLib.getThumbnailById(id);
+        if (!thumbnail) {
+            sendError(res, buildWebError(404, "Thumbnail not found"));
+            return;
+        }
+        sendSuccess(res, thumbnail);
     });
 
     router.get("/random", async (req, res) => {

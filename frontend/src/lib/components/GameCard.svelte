@@ -6,6 +6,7 @@
       max_players: number;
       playing_time: number;
       description: string;
+      thumbnailUrl: string | null;
       onSwipe: (direction: 'left' | 'right') => void;
     }
 
@@ -16,6 +17,7 @@
       max_players,
       playing_time,
       description,
+      thumbnailUrl,
       onSwipe,
       ...restProps
     }: Props = $props();
@@ -69,6 +71,11 @@
     on:pointermove={handlePointerMove}
     on:pointerup={handlePointerUp}
   >
+    {#if thumbnailUrl}
+      <img src={thumbnailUrl} alt="Game Thumbnail" class="thumbnail" />
+    {:else}
+      <div class="thumbnail-placeholder">No Image</div>
+    {/if}
     <h2>{primary_name}</h2>
     <div class="info"><strong>Year:</strong> {year_published}</div>
     <div class="info"><strong>Players:</strong> {min_players} - {max_players}</div>
@@ -88,24 +95,31 @@
 		box-shadow: 3px 3px 0 #2e2c7e;
 		display: flex;
 		flex-direction: column;
-		gap: 0.5rem;
 		height: 450px;
 		touch-action: pan-y;
 		user-select: none;
 	}
+
+  .thumbnail {
+    align-self: center;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+  }
+
 	h2 {
-		font-size: 3rem;
+		font-size: 2rem;
 		text-align: center;
 		margin: 0;
+    margin-bottom: 0.2rem;
 	}
 	.info {
 		font-size: 1.2rem;
 	}
 	.description {
-		font-size: 1.5rem;
-		margin-top: 0.5rem;
+		font-size: 1rem;
+		margin-top: 2rem;
 
-		overflow: hidden;
+		overflow: scroll;
 		text-overflow: ellipsis;
 	}
 </style>
