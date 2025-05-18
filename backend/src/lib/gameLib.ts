@@ -35,11 +35,21 @@ async function getGameByCategories(
     return await rowsQuery<Game>('CALL get_games_by_categories(?, ?, ?, ?, ?, ?, ?)', [category, minPlayers, maxPlayers, yearFirst, yearLast, playTimeMin, playTimeMax, removeId])
 }
 
+
+async function getAllCategories(): Promise<string[]> {
+
+    const result = await rowQuery<{ toutes: string }>(
+     'SELECT get_all_categories() AS toutes',
+     []
+    );
+    return result ? result.toutes.split(', ').map(s => s.trim()) : [];
+}
 export default {
     getGameById,
     getRandomGame,
     getDuelGamesByCategory,
     getDuelGamesByCategories,
-    getGameByCategories
+    getGameByCategories,
+    getAllCategories
 
 }

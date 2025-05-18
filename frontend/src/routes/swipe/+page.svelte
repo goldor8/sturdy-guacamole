@@ -2,6 +2,7 @@
   import GameCard from '$lib/components/GameCard.svelte';
   import { onMount } from 'svelte';
   import type { Game } from '$lib/models/game';
+  import {goto} from "$app/navigation";
 
   let games: Game[] = [];
   let error: string | null = null;
@@ -72,6 +73,9 @@
       swipeDirection = null;
     }, 500);
   }
+  function handleStop() {
+    goto('/'); // retourne au menu principal
+  }
 </script>
 
 <div class="page">
@@ -96,6 +100,7 @@
       <div class="arrow right" on:click={() => swipeCard(0, 'right')}>SWIPE →</div>
     </div>
   {/if}
+  <button class="stop-button" on:click={handleStop}>STOP</button>
   <footer>CORENTIN DIMITRI JULES 2025</footer>
 </div>
   
@@ -163,6 +168,24 @@
         transform: translateX(150%) rotate(20deg);
         opacity: 0;
       }
+    }
+    .stop-button {
+        margin-top: 40px;
+        background-color: #b6ff00;
+        color: black;
+        font-size: 24px;
+        font-weight: bold;
+        padding: 16px 48px;
+        border: none;
+        border-radius: 40px;
+        box-shadow: 4px 4px 0px #2b2b2b;
+        cursor: pointer;
+        transition: all 0.2s ease-in-out;
+      }
+
+    .sto-button:hover {
+      background-color: #d4ff4c;
+      transform: scale(1.05);
     }
   </style>
   

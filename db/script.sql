@@ -1,116 +1,116 @@
-select * from game;
+
 Drop database if exists sturdy_avocado;
 Create database sturdy_avocado;
 Use sturdy_avocado;
 
 CREATE TABLE Game (
-   id_game INT PRIMARY KEY AUTO_INCREMENT,
-   num INT,
-   primary_name VARCHAR(250),
-   year_published INT,
-   min_players INT  ,
-   max_players INT ,
-   description TEXT,
-   playing_time INT ,
-   min_age INT ,
-   owned INT DEFAULT 0,
-   trading INT DEFAULT 0,
-   wanting INT DEFAULT 0,
-   wishing INT DEFAULT 0
+                      id_game INT PRIMARY KEY AUTO_INCREMENT,
+                      num INT,
+                      primary_name VARCHAR(250),
+                      year_published INT,
+                      min_players INT  ,
+                      max_players INT ,
+                      description TEXT,
+                      playing_time INT ,
+                      min_age INT ,
+                      owned INT DEFAULT 0,
+                      trading INT DEFAULT 0,
+                      wanting INT DEFAULT 0,
+                      wishing INT DEFAULT 0
 );
 
 CREATE TABLE Rating (
-   id_rating INT PRIMARY KEY AUTO_INCREMENT,
-   num INT,
-   name VARCHAR(250) NOT NULL,
-   published_year INT,
-   ranking INT,
-   average FLOAT ,
-   bayes_average FLOAT,
-   user_rated INT DEFAULT 0,
-   url VARCHAR(255),
-   thumbnail VARCHAR(255),
-   id_game INT NOT NULL,
-   FOREIGN KEY (id_game) REFERENCES Game(id_game) ON DELETE CASCADE
+                        id_rating INT PRIMARY KEY AUTO_INCREMENT,
+                        num INT,
+                        name VARCHAR(250) NOT NULL,
+                        published_year INT,
+                        ranking INT,
+                        average FLOAT ,
+                        bayes_average FLOAT,
+                        user_rated INT DEFAULT 0,
+                        url VARCHAR(255),
+                        thumbnail VARCHAR(255),
+                        id_game INT NOT NULL,
+                        FOREIGN KEY (id_game) REFERENCES Game(id_game) ON DELETE CASCADE
 );
 
 CREATE TABLE Users (
-   id_user INT PRIMARY KEY AUTO_INCREMENT,
-   username VARCHAR(50) UNIQUE NOT NULL,
-   password VARCHAR(255) NOT NULL,
-   email VARCHAR(100) UNIQUE NOT NULL,
-   user_type ENUM('admin', 'player', 'guest') NOT NULL,
-   last_swipe_session INT
+                       id_user INT PRIMARY KEY AUTO_INCREMENT,
+                       username VARCHAR(50) UNIQUE NOT NULL,
+                       password VARCHAR(255) NOT NULL,
+                       email VARCHAR(100) UNIQUE NOT NULL,
+                       user_type ENUM('admin', 'player', 'guest') NOT NULL,
+                       last_swipe_session INT
 );
 
 CREATE TABLE Category (
-   id_category INT PRIMARY KEY AUTO_INCREMENT,
-   category_name VARCHAR(50) NOT NULL UNIQUE
+                          id_category INT PRIMARY KEY AUTO_INCREMENT,
+                          category_name VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE Mechanic (
-   id_mechanic INT PRIMARY KEY AUTO_INCREMENT,
-   type_mechanic VARCHAR(50) NOT NULL UNIQUE
+                          id_mechanic INT PRIMARY KEY AUTO_INCREMENT,
+                          type_mechanic VARCHAR(50) NOT NULL UNIQUE
 );
 
 CREATE TABLE Expansion (
-   id_expansion INT PRIMARY KEY AUTO_INCREMENT,
-   name_expansion VARCHAR(250) NOT NULL ,
-   id_game DOUBLE NOT NULL
+                           id_expansion INT PRIMARY KEY AUTO_INCREMENT,
+                           name_expansion VARCHAR(250) NOT NULL ,
+                           id_game DOUBLE NOT NULL
 
 
 );
 
 CREATE TABLE Collaborator (
-   id_collaborator INT PRIMARY KEY AUTO_INCREMENT,
-   name_collaborator VARCHAR(250) NOT NULL,
-   role_collaborator VARCHAR(50) NOT NULL
+                              id_collaborator INT PRIMARY KEY AUTO_INCREMENT,
+                              name_collaborator VARCHAR(250) NOT NULL,
+                              role_collaborator VARCHAR(50) NOT NULL
 );
 
 CREATE TABLE Favorites (
-   id_game INT,
-   id_user INT,
-   PRIMARY KEY (id_game, id_user),
-   FOREIGN KEY (id_game) REFERENCES Game(id_game) ON DELETE CASCADE,
-   FOREIGN KEY (id_user) REFERENCES Users(id_user) ON DELETE CASCADE
+                           id_game INT,
+                           id_user INT,
+                           PRIMARY KEY (id_game, id_user),
+                           FOREIGN KEY (id_game) REFERENCES Game(id_game) ON DELETE CASCADE,
+                           FOREIGN KEY (id_user) REFERENCES Users(id_user) ON DELETE CASCADE
 );
 
 CREATE TABLE Worked_On (
-   id_game INT,
-   id_collaborator INT,
-   PRIMARY KEY (id_game, id_collaborator),
-   FOREIGN KEY (id_game) REFERENCES Game(id_game) ON DELETE CASCADE,
-   FOREIGN KEY (id_collaborator) REFERENCES Collaborator(id_collaborator) ON DELETE CASCADE
+                           id_game INT,
+                           id_collaborator INT,
+                           PRIMARY KEY (id_game, id_collaborator),
+                           FOREIGN KEY (id_game) REFERENCES Game(id_game) ON DELETE CASCADE,
+                           FOREIGN KEY (id_collaborator) REFERENCES Collaborator(id_collaborator) ON DELETE CASCADE
 );
 
 CREATE TABLE Has_Mechanic (
-   id_game INT,
-   id_mechanic INT,
-   PRIMARY KEY (id_game, id_mechanic),
-   FOREIGN KEY (id_game) REFERENCES Game(id_game) ON DELETE CASCADE,
-   FOREIGN KEY (id_mechanic) REFERENCES Mechanic(id_mechanic) ON DELETE CASCADE
+                              id_game INT,
+                              id_mechanic INT,
+                              PRIMARY KEY (id_game, id_mechanic),
+                              FOREIGN KEY (id_game) REFERENCES Game(id_game) ON DELETE CASCADE,
+                              FOREIGN KEY (id_mechanic) REFERENCES Mechanic(id_mechanic) ON DELETE CASCADE
 );
 
 CREATE TABLE Is_Category (
-   id_game INT,
-   id_category INT,
-   PRIMARY KEY (id_game, id_category),
-   FOREIGN KEY (id_game) REFERENCES Game(id_game) ON DELETE CASCADE,
-   FOREIGN KEY (id_category) REFERENCES Category(id_category) ON DELETE CASCADE
+                             id_game INT,
+                             id_category INT,
+                             PRIMARY KEY (id_game, id_category),
+                             FOREIGN KEY (id_game) REFERENCES Game(id_game) ON DELETE CASCADE,
+                             FOREIGN KEY (id_category) REFERENCES Category(id_category) ON DELETE CASCADE
 );
 
 
 
 CREATE TABLE Swipe (
-    id_swipe INT PRIMARY KEY AUTO_INCREMENT,
-    id_swipe_session INT,
-    id_user INT,
-    id_game_swiped INT,
-    id_game_kept INT,
-    swipe_date DATETIME DEFAULT CURRENT_TIMESTAMP,
-    FOREIGN KEY (id_user)        REFERENCES Users(id_user),
-    FOREIGN KEY (id_game_swiped) REFERENCES Game(id_game),
-    FOREIGN KEY (id_game_kept)   REFERENCES Game(id_game)
+                       id_swipe INT PRIMARY KEY AUTO_INCREMENT,
+                       id_swipe_session INT,
+                       id_user INT,
+                       id_game_swiped INT,
+                       id_game_kept INT,
+                       swipe_date DATETIME DEFAULT CURRENT_TIMESTAMP,
+                       FOREIGN KEY (id_user)        REFERENCES Users(id_user),
+                       FOREIGN KEY (id_game_swiped) REFERENCES Game(id_game),
+                       FOREIGN KEY (id_game_kept)   REFERENCES Game(id_game)
 );
 
 -- =====================================
@@ -173,20 +173,25 @@ FROM Game AS g
          LEFT JOIN Mechanic AS m     ON hm.id_mechanic = m.id_mechanic
          LEFT JOIN Expansion AS e     ON g.id_game = e.id_game;
 
+
+
 -- TRIGGERS
 
 DROP TRIGGER IF EXISTS cascade_delete_game;
+
 DELIMITER $$
+
 CREATE TRIGGER cascade_delete_game
     AFTER DELETE ON Game
     FOR EACH ROW
 BEGIN
-    DELETE FROM Favorites   WHERE id_game = OLD.id_game;
-    DELETE FROM Worked_On   WHERE id_game = OLD.id_game;
-    DELETE FROM Has_Mechanic WHERE id_game = OLD.id_game;
-    DELETE FROM Is_Category  WHERE id_game = OLD.id_game;
-    DELETE FROM Expansion    WHERE id_game = OLD.id_game;
+    DELETE FROM Favorites     WHERE id_game = OLD.id_game;
+    DELETE FROM Worked_On     WHERE id_game = OLD.id_game;
+    DELETE FROM Has_Mechanic  WHERE id_game = OLD.id_game;
+    DELETE FROM Is_Category   WHERE id_game = OLD.id_game;
+    DELETE FROM Expansion     WHERE id_game = OLD.id_game;
 END $$
+
 DELIMITER ;
 
 
@@ -337,14 +342,6 @@ DELIMITER ;
 
 DELIMITER $$
 CREATE PROCEDURE get_games_by_categories(
-    --category: string | null,
---     minPlayers: number | null,
---     maxPlayers: number | null,
---     yearFirst: number | null,
---     yearLast: number | null,
---     playTimeMin: number | null,
---     playTimeMax: number | null,
---     removeId: number[] | null,
     IN p_categories      VARCHAR(255),  -- liste CSV ou NULL
     IN p_minPlayers      INT,           -- minPlayers ou NULL
     IN p_maxPlayers      INT,           -- maxPlayers ou NULL
@@ -406,4 +403,22 @@ PREPARE stmt FROM @sql;
 EXECUTE stmt;
 DEALLOCATE PREPARE stmt;
 END$$
+DELIMITER ;
+
+-- Fonction qui renvoie toutes les catégories possibles
+
+DELIMITER $$
+
+CREATE FUNCTION get_all_categories()
+    RETURNS TEXT
+    DETERMINISTIC
+    READS SQL DATA
+BEGIN
+  DECLARE categories TEXT;
+SELECT GROUP_CONCAT(category_name SEPARATOR ', ')
+INTO categories
+FROM Category;
+RETURN categories;
+END$$
+
 DELIMITER ;
