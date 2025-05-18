@@ -93,8 +93,8 @@
         padding: 2rem;
         border: 1px solid #ddd;
         border-radius: 8px;
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        background-color: #f9f9f9;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.69);
+        background-color: rgba(218, 251, 129, 0.25);
     }
 
     label {
@@ -102,7 +102,7 @@
         flex-direction: column;
         font-size: 1rem;
         font-weight: 500;
-        color: #333;
+        color: #000000;
     }
 
     input {

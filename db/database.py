@@ -10,6 +10,16 @@ conn = pymysql.connect(
     charset='utf8mb4',
     cursorclass=pymysql.cursors.DictCursor
 )
+def to_int(v, default=0):
+    """
+    Convertit v en int si possible, sinon retourne default.
+    """
+    if v is None or v == '':
+        return default
+    try:
+        return int(v)
+    except ValueError:
+        return default
 
 def process_csv():
     try:
@@ -17,22 +27,46 @@ def process_csv():
             # Étape 1: Insérer les jeux depuis details.csv
             with open('./dataset/details.csv', 'r', encoding='utf-8') as f:
                 reader = csv.DictReader(f)
-                num_to_id = {}  # Dictionnaire pour mapper num (details.csv) à id_game
+                num_to_id = {}
 
                 for row in reader:
-                    # Insertion dans la table Game
-                    row = {k: v.replace('[', '').replace(']', '').replace("'", '').replace('"', '') for k, v in row.items()}
+                    # 1) Nettoyage sûr des champs
+                    row = {
+                        k: (v or '').replace('[','').replace(']','').replace("'",'').replace('"','')
+                        for k, v in row.items()
+                    }
+                    num          = to_int(row['num'])
+                    yearpublished= to_int(row['yearpublished'])
+                    minplayers   = to_int(row['minplayers'])
+                    maxplayers   = to_int(row['maxplayers'])
+                    playingtime  = to_int(row['playingtime'])
+                    minage       = to_int(row['minage'])
+                    owned        = to_int(row['owned'], default=0)
+                    trading      = to_int(row['trading'], default=0)
+                    wanting      = to_int(row['wanting'], default=0)
+                    wishing      = to_int(row['wishing'], default=0)
                     cursor.execute('''
-                        INSERT INTO Game (
-                            num, primary_name, year_published, min_players, max_players,
-                            description, playing_time, min_age, owned, trading, wanting, wishing
-                        ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-                    ''', (
-                        row['num'], row['primary'], row['yearpublished'],
-                        row['minplayers'], row['maxplayers'], row['description'],
-                        row['playingtime'], row['minage'], row['owned'],
-                        row['trading'], row['wanting'], row['wishing']
-                    ))
+                                   INSERT INTO Game (
+                                       num, primary_name, year_published, min_players, max_players,
+                                       description, playing_time, min_age, owned, trading, wanting, wishing
+                                   ) VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+                                   ''', (
+                                       num,
+                                       row['primary'],
+                                       yearpublished,
+                                       minplayers,
+                                       maxplayers,
+                                       row['description'],
+                                       playingtime,
+                                       minage,
+                                       owned,
+                                       trading,
+                                       wanting,
+                                       wishing
+                                   ))
+
+
+
                     game_id = cursor.lastrowid
                     num_to_id[row['num']] = game_id  # Stocker le mapping num → id_game
 

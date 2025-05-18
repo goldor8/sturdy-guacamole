@@ -1,12 +1,13 @@
 <script lang="ts">
     import { goto } from '$app/navigation';
+    import {onMount} from "svelte";
 
     let criteriaOptions = ['Year Published', 'Game Category', 'Numbers of Players', 'Average Play Time'];
     let selectedCriterion = 'Year Published';
     let selectedCategory = '';
     let playerRange = [2, 10];
     let playTimeRange = [30, 250]; // en minutes
-    const categories = ['Fantastique', 'Science-fiction', 'Historique', 'Stratégie'];
+    let categories: string[] = [];
     
 
     const MIN_YEAR = -3500;
@@ -40,7 +41,15 @@
             return Math.round(BREAK2 + ratio * size3);
         }
     }
-
+    onMount(async () => {
+        try {
+            const res = await fetch('http://localhost:3000/games/allcategory');
+            if (!res.ok) throw new Error(`Erreur ${res.status}`);
+            categories = await res.json();             // on suppose un tableau de chaînes
+        } catch (e) {
+            console.error('Impossible de charger les catégories :', e);
+        }
+    });
     // Convert année → % pour slider
     function yearToPercent(y: number): number {
         if (y <= BREAK1) {
