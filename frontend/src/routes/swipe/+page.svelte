@@ -3,15 +3,56 @@
   import { onMount } from 'svelte';
   import type { Game } from '$lib/models/game';
   import {goto} from "$app/navigation";
-
+  const urlParams = new URLSearchParams(window.location.search);
+  const apiParams = new URLSearchParams();
   let games: Game[] = [];
   let error: string | null = null;
   let swipedCardIndex: number | null = null;
   let swipeDirection: 'left' | 'right' | null = null;
+  const shownGameIds = new Set<number>();
+  function updateRemoveIdParam() {
+    apiParams.set('removeId', Array.from(new Set([...shownGameIds])).filter(id => !isNaN(id)).join(','));
 
+  }
+
+  async function fetchNextGame(): Promise<Game | null> {
+    try {
+      updateRemoveIdParam();
+      const apiUrl = `http://localhost:3000/games/gameCategory?${apiParams}`;
+      const res = await fetch(apiUrl);
+      if (!res.ok) return null;
+
+      const raw = await res.json();
+      const rows: any[] = Array.isArray(raw) ? raw[0] : [];
+
+      if (rows.length > 0) {
+        const g = rows[0];
+        shownGameIds.add(g.id_game);
+
+        const nextGame: Game = {
+          id_game:       g.id_game,
+          num:           g.num,
+          primary_name:  g.primary_name,
+          year_published:g.year_published,
+          min_players:   g.min_players,
+          max_players:   g.max_players,
+          playing_time:  g.playing_time,
+          description:   g.description,
+          min_age:       g.min_age,
+          owned:         g.owned,
+          trading:       g.trading,
+          wanting:       g.wanting,
+          wishing:       g.wishing
+        };
+        return nextGame;
+      }
+
+      return null;
+    } catch {
+      return null;
+    }
+  }
   onMount(async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const apiParams = new URLSearchParams();
 
     if (urlParams.has('category')) {
       apiParams.set('categories', urlParams.get('category')!);
@@ -28,7 +69,7 @@
       apiParams.set('playTimeMin', urlParams.get('minTime')!);
       apiParams.set('playTimeMax', urlParams.get('maxTime')!);
     }
-
+    updateRemoveIdParam();
     const apiUrl = `http://localhost:3000/games/duel?${apiParams}`;
     console.log('Fetching', apiUrl);
 
@@ -40,7 +81,10 @@
       const raw = await res.json();
       const rows: any[] = Array.isArray(raw) ? raw[0] : [];
 
-      games = rows.map(g => ({
+      games = rows.map(g =>
+      {
+        shownGameIds.add(g.id_game);
+        return{
         id_game:       g.id_game,
         num:           g.num,
         primary_name:  g.primary_name,
@@ -54,7 +98,8 @@
         trading:       g.trading,
         wanting:       g.wanting,
         wishing:       g.wishing
-      }));
+      };
+      });
       console.log('Games:', games);
       if (games.length === 0) {
         error = 'Aucun jeu trouvé pour ces critères.';
@@ -67,8 +112,14 @@
   function swipeCard(index: number, direction: 'left' | 'right') {
     swipedCardIndex = index;
     swipeDirection = direction;
-    setTimeout(() => {
-      games.splice(index, 1);
+    setTimeout(async () => {
+      // Remplacer la carte swipée par un nouveau jeu
+      const next = await fetchNextGame();
+      if (next) {
+        games[index] = next;
+      } else {
+        games.splice(index, 1);
+      }
       swipedCardIndex = null;
       swipeDirection = null;
     }, 500);
@@ -97,13 +148,13 @@
           />
         </div>
       {/each}
-      <div class="arrow right" on:click={() => swipeCard(0, 'right')}>SWIPE →</div>
+      <div class="arrow right" on:click={() => swipeCard(1, 'right')}>SWIPE →</div>
     </div>
   {/if}
   <button class="stop-button" on:click={handleStop}>STOP</button>
   <footer>CORENTIN DIMITRI JULES 2025</footer>
 </div>
-  
+
   <style>
     .page {
       background-color: #2e2c7e;

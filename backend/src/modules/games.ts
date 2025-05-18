@@ -75,7 +75,12 @@ function init(): Router{
         const yearLast     = req.query.yearLast ? parseInt(req.query.yearLast as string, 10) : null;
         const playTimeMin  = req.query.playTimeMin ? parseInt(req.query.playTimeMin as string, 10) : null;
         const playTimeMax  = req.query.playTimeMax ? parseInt(req.query.playTimeMax as string, 10) : null;
-        const removeId = req.query.removeId as string | undefined;
+        let removeId = req.query.removeId as string | undefined;
+        const parsedRemoveId = removeId
+            ? removeId.startsWith('[')
+                ? JSON.parse(removeId).join(',') // ex: ['779', '668'] → '779,668'
+                : removeId
+            : null;
         try {
             const game = await gameLib.getGameByCategories(
                 category,
@@ -85,7 +90,7 @@ function init(): Router{
                 yearLast,
                 playTimeMin,
                 playTimeMax,
-                removeId ? JSON.parse(removeId) : null
+                parsedRemoveId
             );
             res.json(game);
 

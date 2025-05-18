@@ -30,9 +30,13 @@ async function getGameByCategories(
     yearLast: number | null,
     playTimeMin: number | null,
     playTimeMax: number | null,
-   removeId: number[] | null,
-    ): Promise<Game[]> {
-    return await rowsQuery<Game>('CALL get_games_by_categories(?, ?, ?, ?, ?, ?, ?)', [category, minPlayers, maxPlayers, yearFirst, yearLast, playTimeMin, playTimeMax, removeId])
+    removeId: number[] | null,
+): Promise<Game[]> {
+    return await rowsQuery<Game>(
+
+        'CALL get_games_by_categories(?, ?, ?, ?, ?, ?, ?, ?)',
+        [category, minPlayers, maxPlayers, yearFirst, yearLast, playTimeMin, playTimeMax, removeId]
+    );
 }
 
 
