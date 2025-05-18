@@ -79,7 +79,7 @@
         {/if}
     </form>
 {:else}
-    <button id="logoutButton" onclick="{() => { authenticated = false; }}">Logout</button>
+    <button id="logoutButton" onclick="{handleLogout}">Logout</button>
     <slot />
 {/if}
 
