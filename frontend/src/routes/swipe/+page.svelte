@@ -3,7 +3,8 @@
   import { onMount } from 'svelte';
   import type { Game } from '$lib/models/game';
   import {goto} from "$app/navigation";
-    import { getGameThumbnailById } from '$lib/gamesApi';
+  import { getGameThumbnailById } from '$lib/gamesApi';
+
   const urlParams = new URLSearchParams(window.location.search);
   const apiParams = new URLSearchParams();
   let games: Game[] = [];
@@ -12,6 +13,9 @@
   let swipedCardIndex: number | null = null;
   let swipeDirection: 'left' | 'right' | null = null;
   const shownGameIds = new Set<number>();
+
+  let swipeCount = 0;
+  const memoryCount: Record<number, number> = {};
   function updateRemoveIdParam() {
     apiParams.set('removeId', Array.from(new Set([...shownGameIds])).filter(id => !isNaN(id)).join(','));
 
@@ -121,6 +125,14 @@
   function swipeCard(index: number, direction: 'left' | 'right') {
     swipedCardIndex = index;
     swipeDirection = direction;
+    const keptIndex = index === 0 ? 1 : 0;
+    const keptGame = games[keptIndex];
+    if (keptGame) {
+      memoryCount[keptGame.id_game] = (memoryCount[keptGame.id_game] || 0) + 1;
+    }
+
+    swipeCount++;
+
     setTimeout(async () => {
       // Remplacer la carte swipée par un nouveau jeu
       const next = await fetchNextGame();
@@ -132,11 +144,23 @@
       }
       swipedCardIndex = null;
       swipeDirection = null;
+      // **3. Si on a fait 10 swipes, on affiche le podium**
+      if (swipeCount >= 10) {
+       await  handleStop();
+      }
+
     }, 500);
   }
   function handleStop() {
-    goto('/'); // retourne au menu principal
+    const json = JSON.stringify(memoryCount);
+    const encoded = encodeURIComponent(json);
+
+     goto(`/podium?results=${encoded}`);
   }
+
+
+
+
 </script>
 
 <div class="page">
