@@ -83,7 +83,7 @@ export async function get(route: String, params: any){
         throw new Error(response.statusText)
     }
 
-    return await response.json()
+    return (await response.json()).data
 }
 
 export async function post(route: String, params: any){
@@ -104,7 +104,7 @@ export async function post(route: String, params: any){
         throw new Error(response.statusText)
     }
 
-    return await response.json()
+    return (await response.json()).data
 }
 
 export async function getSecure(route: String, params: any){
@@ -130,7 +130,7 @@ export async function getSecure(route: String, params: any){
         throw new Error(response.statusText)
     }
 
-    return await response.json()
+    return (await response.json()).data
 }
 
 export async function postSecure(route: String, params: any){
@@ -155,7 +155,7 @@ export async function postSecure(route: String, params: any){
         throw new Error(response.statusText)
     }
 
-    return await response.json()
+    return (await response.json()).data
 }
 
 export async function postSecureSpecialParms(route: String, params: any){
@@ -179,7 +179,7 @@ export async function postSecureSpecialParms(route: String, params: any){
         throw new Error(response.statusText)
     }
 
-    return await response.json()
+    return (await response.json()).data
 }
 
 export async function putSecure(route: String, params: any){
@@ -196,13 +196,14 @@ export async function putSecure(route: String, params: any){
     })
     
     if(!response.ok){
-        if(response.success === false){
-            throw new ApiError(response.error)
+        const jsonResponse = await response.json()
+        if(jsonResponse.success === false){
+            throw new ApiError(jsonResponse.error)
         }
         throw new Error(response.statusText)
     }
 
-    return await response.json()
+    return (await response.json()).data
 }
 
 export async function deleteSecure(route: String, params: any){
@@ -227,5 +228,5 @@ export async function deleteSecure(route: String, params: any){
         throw new Error(response.statusText)
     }
 
-    return await response.json()
+    return (await response.json()).data
 }
