@@ -144,7 +144,7 @@
           {swipedCardIndex === index && swipeDirection === 'right' ? 'swipe-right' : ''}">
           <GameCard
                   {...game}
-                  on:swipe={(e) => swipeCard(index, e.detail)}
+                  onSwipe={(side) => swipeCard(index, side)}
           />
         </div>
       {/each}

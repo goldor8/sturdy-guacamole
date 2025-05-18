@@ -1,12 +1,24 @@
 <script lang="ts">
-    export let primary_name: string;
-    export let year_published: number;
-    export let min_players: number;
-    export let max_players: number;
-    export let playing_time: number;
+    interface Props {
+      primary_name: string;
+      year_published: number;
+      min_players: number;
+      max_players: number;
+      playing_time: number;
+      description: string;
+      onSwipe: (direction: 'left' | 'right') => void;
+    }
 
-    export let description: string;
-    export let onSwipe: (direction: 'left' | 'right') => void;
+    let {
+      primary_name,
+      year_published,
+      min_players,
+      max_players,
+      playing_time,
+      description,
+      onSwipe,
+      ...restProps
+    }: Props = $props();
 
     let startX = 0;
     let currentX = 0;
@@ -34,20 +46,23 @@
         onSwipe('left');
       } else if (currentX > 100) {
         onSwipe('right');
-      } else {
-        // Retour à la position initiale
-        cardElem.style.transition = 'transform 0.3s';
-        cardElem.style.transform = 'translateX(0) rotate(0)';
-        setTimeout(() => {
-          cardElem.style.transition = '';
-        }, 300);
       }
+
+      // cardElem.style.transition = 'transform 0.3s';
+      // 
+
+      // Retour à la position initiale
+      setTimeout(() => {
+        
+        cardElem.style.transform = 'translateX(0) rotate(0)';
+        // cardElem.style.transition = '';
+      }, 500);
   
       currentX = 0;
     }
   </script>
   
-  <div {...$$restProps}
+  <div {...restProps}
     bind:this={cardElem}
     class="card"
     on:pointerdown={handlePointerDown}
